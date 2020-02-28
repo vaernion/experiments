@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <input type="text" id="name" placeholder="Name" />
+    <input type="number" id="year" placeholder="Birthyear" />
+    <button id="button">run</button>
+    <div id="output"></div>
+  </body>
+  <script type="text/javascript">
+    let nameIn = document.getElementById("name");
+    let yearIn = document.getElementById("year");
+    let output = document.getElementById("output");
+
+    button.onclick = () => {
+      let name = nameIn.value;
+      let year = yearIn.value;
+
+      let buddy = new Person(name, year);
+      console.log(buddy);
+
+      output.innerText =
+        "My buddy is " + buddy.name + " who is " + buddy.age + " years old.";
+    };
+
+    function Person(name, year) {
+      this.name = name;
+      this.year = year;
+      this.age = () => {
+        return Number(new Date().getFullYear()) - this.year;
+      };
+    }
+  </script>
+</html>

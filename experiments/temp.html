@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <div id="utdata"></div>
+    <script type="text/javascript">
+      var person,
+        i,
+        x = "";
+      person = {
+        navn: "Jonas",
+        alder: 26,
+        biler: [{ key: "Ford" }, { key: "BMW" }, { key: "Fiat" }]
+      };
+      for (i of person.biler) {
+        x += i.key + "<br>";
+      }
+      document.getElementById("utdata").innerHTML = x;
+    </script>
+  </body>
+</html>

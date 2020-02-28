@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <input type="text" id="nameIn" placeholder="Name" />
+    <input type="number" id="heightIn" placeholder="Height" />
+    <input type="number" id="weightIn" placeholder="Weight" />
+    <button id="button">ok</button>
+    <div id="output"></div>
+  </body>
+  <script>
+    class Person {
+      constructor(name, height, weight) {
+        if (!name || !height || !weight) {
+          throw new Error("all fields must be filled");
+        }
+        this.name = name;
+        this.height = height;
+        this.weight = weight;
+      }
+      get name() {
+        return this._name;
+      }
+      set name(name) {
+        if (name.length < 2) {
+          throw new Error("is your name that short?");
+        }
+        this._name = name;
+      }
+      get height() {
+        return this._height;
+      }
+      set height(height) {
+        if (height < 0.1 || height > 300) {
+          throw new Error("height must be valid number in cm or meters");
+        }
+        this._height = height < 10 ? height : height / 100;
+      }
+      get weight() {
+        return this._weight;
+      }
+      set weight(weight) {
+        if (weight < 1) {
+          throw new Error("weight too low");
+        }
+        this._weight = weight;
+      }
+      calcBMI() {
+        return (this.weight / this.height ** 2).toFixed(2);
+      }
+      changeName(_newName) {}
+    }
+
+    document.getElementById("button").onclick = () => {
+      let output = document.getElementById("output");
+      let name = document.getElementById("nameIn").value;
+      let height = document.getElementById("heightIn").value;
+      let weight = document.getElementById("weightIn").value;
+      let person = new Person(name, height, weight);
+      output.innerText =
+        person.name +
+        " weighs " +
+        person.weight +
+        " kg og er " +
+        person.height +
+        " cm høy";
+    };
+
+    let bob = new Person("Bob Bobson", 2.12, 100);
+    let barney = new Person("Barney Barneyson", 180, 80);
+    console.log(bob, barney);
+    // console.log("bob bmi: " + bob.calcBMI());
+    // console.log("barney bmi: " + barney.calcBMI());
+  </script>
+</html>

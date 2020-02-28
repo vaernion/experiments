@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      let objStored = "objStored";
+      let obj = { name: "abc", info: 5 };
+      // let json = JSON.stringify(obj, transform());
+      let json = JSON.stringify(obj, transform);
+      localStorage.setItem(objStored, json);
+
+      let storage = localStorage.getItem(objStored);
+      let output = JSON.parse(storage);
+      console.log(json);
+      console.log("output.info", output.info);
+
+      function transform(k, v) {
+        console.log(k, v);
+        return k === "info" ? v + 1 : v;
+      }
+    </script>
+  </body>
+</html>

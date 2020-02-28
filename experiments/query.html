@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <div id="foo\bar">backslash</div>
+    <div id="foo:bar">colon</div>
+
+    <script>
+      console.log("#foo\bar"); // "#fooar" (\b is the backspace control character)
+      // document.querySelector("#foo\bar"); // Does not match anything
+
+      console.log("#foo\\bar"); // "#foo\bar"
+      console.log("#foo\\\\bar"); // "#foo\\bar"
+      let backslash = document.querySelector("#foo\\\\bar"); // Match the first div
+      console.log(backslash.innerText);
+
+      // document.querySelector("#foo:bar"); // Does not match anything
+      let colon = document.querySelector("#foo\\:bar"); // Match the second div
+      console.log(colon.innerText);
+    </script>
+  </body>
+</html>

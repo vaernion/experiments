@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      let electionCampaign = new Promise((win, fail) => {
+        setInterval(() => {
+          const electionOutcome = Math.random() < 0.5;
+          if (electionOutcome) {
+            win("fuck yeah");
+          } else {
+            fail(new Error("rigged"));
+          }
+        }, 500);
+      });
+      electionCampaign
+        .finally(() => console.log("election done"))
+        .then(result => console.log(result), error => console.log(error))
+        .finally(() => console.log("final finally", electionCampaign));
+    </script>
+  </body>
+</html>
