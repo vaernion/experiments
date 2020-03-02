@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+  </head>
+  <body>
+    <script type="text/javascript">
+      // function abc(a = null) {
+      //   console.log("abc", a, 10);
+      // }
+      // abc();
+
+      const combine = function() {
+        return this.name + " " + this.age;
+      };
+      const lowerAge = function(num) {
+        // return this.age - num;
+        return 27 - num;
+      };
+
+      let objMethods = {
+        a: combine,
+        b: lowerAge
+      };
+
+      function populateFunctions(obj) {
+        let populatedObj = obj;
+        obj["methodIds"].forEach((v, i) => {
+          let arg = obj["methodArgs"][i];
+          // console.log(v, i, arg);
+          let methodName = objMethods[v].name;
+          let methodRef = objMethods[v];
+          // let temp = methodRef.toString();
+          // console.log("temp:", temp);
+          // let temp2 = new Function(`return ${temp}`);
+          // let temp2 = new Function("num = 10", `return ${temp}`)();
+          // console.log("temp2:", temp2());
+          // obj[methodName] = temp2;
+          // function helpFunc(x) {
+          //   function temp(x) {
+          //     return 10;
+          //   }
+          // }
+          // console.log(helpFunc);
+          // let helpFunc2 = helpFunc;
+          // obj[methodName] = helpFunc2;
+          obj[methodName] = methodRef;
+          let temp = obj[methodName](arg);
+
+          // modify methodRef to include argument
+          console.log(temp);
+          let methodWithArg = `${methodName}(${arg})`;
+          console.log(methodWithArg);
+          let methodArgFunc = new Function(methodWithArg);
+          obj["methodArr"].push(methodArgFunc);
+        });
+        return obj;
+      }
+
+      let t1 = {
+        name: "t1",
+        age: 27,
+        methodIds: ["a", "b"],
+        methodArgs: [null, 10],
+        methodArr: []
+        // lowerAge: function() {
+        //   return 10;
+        // }
+      };
+      // console.log(t1.lowerAge.toString());
+      // console.log("t1", t1, t1.lowerAge());
+
+      let t1json = JSON.stringify(t1);
+      // console.log("t1json", t1json);
+
+      let t1parsed = JSON.parse(t1json);
+      // console.log("t1parsed", t1parsed);
+
+      let t1populated = populateFunctions(t1parsed);
+      console.log("t1populated", t1populated);
+
+      // console.log(t1populated.lowerAge());
+
+      console.log(
+        (() => {
+          return lowerAge(10);
+        })()
+      );
+      let test5s = lowerAge.name + "(10)";
+      console.log("test5s", test5s);
+      let test5f = new Function(`return ${test5s}`)();
+      console.log("test5", test5f);
+      console.log(test5f);
+    </script>
+  </body>
+</html>
