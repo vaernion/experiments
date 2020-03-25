@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="output-cont">
+      <button onclick="testWorker()">start worker</button>
+      <h3 id="workerOutput"></h3>
+      <button onclick="terminateWorker()">terminate worker</button>
+    </div>
+    <br />
+    <div class="output-cont">
+      <button onclick="testMainThread()">start blocking thread</button>
+      <h3 id="mainThreadOutput"></h3>
+    </div>
+    <br />
+    <div class="output-cont">
+      <button onclick="alert('browser responsive!')">
+        test browser responsiveness
+      </button>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
