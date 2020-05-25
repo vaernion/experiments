@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>local storage</title>
+  </head>
+  <body>
+    <input type="text" id="input" />
+    <button id="save">save</button>
+    <button id="load">load</button>
+    <button id="clear">clear</button>
+    <button id="remove">remove "test"</button>
+    <button id="key">log key 0</button>
+    <div id="output"></div>
+    <script>
+      if (!typeof Storage) {
+        console.log("fail");
+      } else {
+        const input = document.getElementById("input");
+        const output = document.getElementById("output");
+
+        document.getElementById("save").onclick = () => {
+          localStorage.setItem("test", JSON.stringify(input.value));
+          localStorage.setItem("test2", "test2value");
+        };
+
+        document.getElementById("load").onclick = () => {
+          output.innerText = JSON.parse(localStorage.getItem("test"));
+        };
+
+        document.getElementById("clear").onclick = () => {
+          localStorage.clear();
+        };
+
+        document.getElementById("remove").onclick = () => {
+          localStorage.removeItem("test");
+        };
+
+        document.getElementById("key").onclick = () => {
+          console.log(localStorage.key(0));
+        };
+      }
+    </script>
+  </body>
+</html>
