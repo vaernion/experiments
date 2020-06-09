@@ -110,16 +110,27 @@ class ShowService {
 }
 const showService = new ShowService();
 
-const StoreContext = React.createContext();
+const StoreContext = React.createContext<any>();
+
+interface StoreInterface {
+  addRating: (rating: Rating) => void;
+  addShow: (show: Show) => void;
+  deleteShow: (show: Show) => void;
+  ratings: Array<Rating>;
+  shows: Array<Show>;
+}
 
 function Store(props) {
   const history = useHistory();
 
   const [shows, setShows] = React.useState(null);
   const [ratings, setRatings] = React.useState(null);
-  const [errorMessage, setErrorMessage] = React.useState(null);
   const [showsUpdated, setShowsUpdated] = React.useState(true);
   const [ratingsUpdated, setRatingsUpdated] = React.useState(true);
+
+  const handleError = (e: Error) => {
+    console.log(e.message);
+  };
 
   React.useEffect(() => {
     if (!showsUpdated) return;
@@ -128,7 +139,7 @@ function Store(props) {
       .then((results) => {
         setShows(results);
       })
-      .catch((e: Error) => handleError((e.message: string)));
+      .catch((e: Error) => handleError(e));
     setShowsUpdated(false);
   }, [showsUpdated]);
 
@@ -139,16 +150,9 @@ function Store(props) {
       .then((results) => {
         setRatings(results);
       })
-      .catch((e: Error) => handleError((e.message: string)));
+      .catch((e: Error) => handleError(e));
     setRatingsUpdated(false);
   }, [ratingsUpdated]);
-
-  const handleError = (message: string) => {
-    setErrorMessage(message);
-    setTimeout(() => {
-      setErrorMessage(null);
-    }, 3000);
-  };
 
   const addShow = (show: Show) => {
     showService
@@ -156,22 +160,18 @@ function Store(props) {
       .then(() => {
         navigateToRoot();
       })
-      .catch((e: Error) => handleError((e.message: string)));
+      .catch((e: Error) => handleError(e));
     setShowsUpdated(true);
   };
 
   const addRating = (rating: Rating) => {
-    showService
-      .addRating(rating)
-      .catch((e: Error) => handleError((e.message: string)));
+    showService.addRating(rating).catch((e: Error) => handleError(e));
     setRatingsUpdated(true);
   };
 
   const deleteShow = (show: Show) => {
-    showService
-      .deleteShowRatings(show.id)
-      .then(showService.deleteShow(show.id))
-      .catch((e: Error) => handleError((e.message: string)));
+    showService.deleteShowRatings(show.id).catch((e: Error) => handleError(e));
+    showService.deleteShow(show.id).catch((e: Error) => handleError(e));
     setShowsUpdated(true);
     setRatingsUpdated(true);
   };
@@ -186,8 +186,6 @@ function Store(props) {
         value={{
           shows,
           ratings,
-          errorMessage,
-          handleError,
           addShow,
           addRating,
           deleteShow,
@@ -200,18 +198,22 @@ function Store(props) {
 }
 
 function AddShow() {
-  const store = React.useContext(StoreContext);
+  const store = React.useContext<StoreInterface>(StoreContext);
   const [show, setShow] = React.useState<Show>(new Show());
+  const [errorMessage, setErrorMessage] = React.useState(null);
 
-  const handleChange = (e) => {
+  const handleChange = (e: SyntheticEvent<HTMLButtonElement>) => {
     setShow(
       ({ ...show, [e.currentTarget.name]: e.currentTarget.value }: Object)
     );
+    // const name: string = e.currentTarget.name;
+    // const value: string = e.currentTarget.value;
+    // show[name] = value;
   };
 
   const handleAddShow = () => {
     if (!show.title || !show.description) {
-      store.handleError('Add title and description');
+      setErrorMessage('Add title and description');
       return;
     }
     store.addShow(show);
@@ -238,13 +240,13 @@ function AddShow() {
       <button onClick={() => handleAddShow()}>Add show</button>
 
       <NavLink to={'/'}>Cancel</NavLink>
-      {store.errorMessage}
+      {errorMessage}
     </>
   );
 }
 
 function DeleteShow() {
-  const store = React.useContext(StoreContext);
+  const store = React.useContext<StoreInterface>(StoreContext);
 
   if (!store.shows) return null;
   return (
@@ -256,19 +258,19 @@ function DeleteShow() {
         </div>
       ))}
       <NavLink to={'/'}>Cancel</NavLink>
-      {store.errorMessage}
     </>
   );
 }
 
-function DisplayShow(props) {
-  const store = React.useContext(StoreContext);
+function DisplayShow(props: { show: Show }) {
+  const store = React.useContext<StoreInterface>(StoreContext);
   let rating = new Rating();
   const show = props.show;
   const showRatings = store.ratings.filter((e) => e.showId === show.id);
 
   const handleRating = (value) => {
-    rating = { ...rating, showId: show.id, rating: value };
+    rating.showId = show.id;
+    rating.rating = value;
     store.addRating(rating);
   };
 
@@ -299,10 +301,10 @@ function DisplayShow(props) {
 }
 
 function DisplayAllShows() {
-  const store = React.useContext(StoreContext);
-  const [search, setSearch] = React.useState('');
+  const store = React.useContext<StoreInterface>(StoreContext);
+  const [search, setSearch] = React.useState<string>('');
 
-  const handleSearch = (value) => {
+  const handleSearch = (value: string) => {
     setSearch(value);
   };
 

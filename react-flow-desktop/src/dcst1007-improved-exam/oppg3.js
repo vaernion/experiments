@@ -46,19 +46,6 @@ class ShowService {
     });
   }
 
-  getShow(title: string): Promise<Show> {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        'SELECT * FROM Shows WHERE title = ?',
-        [title],
-        (error: ?Error, results: Show[]) => {
-          if (error) reject(error);
-          resolve(results[0]);
-        }
-      );
-    });
-  }
-
   addShow(show: Show): Promise<any> {
     return new Promise((resolve, reject) => {
       pool.query(
@@ -69,6 +56,15 @@ class ShowService {
           resolve(results);
         }
       );
+    });
+  }
+
+  deleteShow(id: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      pool.query('DELETE FROM Shows WHERE id = ?', [id], (error, results) => {
+        if (error) reject(error);
+        resolve(results);
+      });
     });
   }
 
@@ -89,6 +85,20 @@ class ShowService {
       pool.query(
         'INSERT INTO ShowRatings (showId, rating) values (?, ?)',
         [rating.showId, rating.rating],
+        (error, results) => {
+          if (error) return console.error(error);
+
+          resolve(results);
+        }
+      );
+    });
+  }
+
+  deleteShowRatings(showId: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      pool.query(
+        'DELETE FROM ShowRatings WHERE showId = ?',
+        [showId],
         (error, results) => {
           if (error) return console.error(error);
 
@@ -153,8 +163,16 @@ function Store(props) {
   const addRating = (rating: Rating) => {
     showService
       .addRating(rating)
-      .then(() => {})
       .catch((e: Error) => handleError((e.message: string)));
+    setRatingsUpdated(true);
+  };
+
+  const deleteShow = (show: Show) => {
+    showService
+      .deleteShowRatings(show.id)
+      .then(() => showService.deleteShow(show.id))
+      .catch((e: Error) => handleError((e.message: string)));
+    setShowsUpdated(true);
     setRatingsUpdated(true);
   };
 
@@ -172,6 +190,7 @@ function Store(props) {
           handleError,
           addShow,
           addRating,
+          deleteShow,
         }}
       >
         {props.children}
@@ -180,40 +199,8 @@ function Store(props) {
   );
 }
 
-function DisplayShow(props) {
-  const store = React.useContext(StoreContext);
-  const [rating, setRating] = React.useState<Rating>(new Rating());
-  const show = props.show;
-
-  const handleChange = (e) => {
-    setRating(
-      ({
-        ...rating,
-        [e.currentTarget.name]: e.currentTarget.value,
-        showId: show.id,
-      }: Object)
-    );
-  };
-  return (
-    <>
-      <div key={show.id}>
-        <h1> {show.title}</h1>
-        <div>{show.description}</div>
-        Average rating:{' '}
-        {store.ratings
-          .filter((e) => e.showId === show.id)
-          .reduce((sum, e) => sum + e.rating, 0) /
-          store.ratings.filter((e) => e.showId === show.id).length}
-        Your rating:
-        <input name="rating" type="number" required onChange={handleChange} />
-        <button onClick={() => store.addRating(rating)}>Submit</button>
-      </div>
-    </>
-  );
-}
-
-function AddShow(props) {
-  const store = React.useContext(StoreContext);
+function AddShow() {
+  const store = React.useContext<Object>(StoreContext);
   const [show, setShow] = React.useState<Show>(new Show());
 
   const handleChange = (e) => {
@@ -222,39 +209,124 @@ function AddShow(props) {
     );
   };
 
+  const handleAddShow = () => {
+    if (!show.title || !show.description) {
+      store.handleError('Add title and description');
+      return;
+    }
+    store.addShow(show);
+  };
+
   if (!store) return null;
   return (
     <>
       <form>
         Title
         <input name="title" type="text" required onChange={handleChange} />
+        <br />
         Description
-        <input
+        <br />
+        <textarea
           name="description"
           type="text"
           required
           onChange={handleChange}
+          rows="8"
+          cols="80"
         />
       </form>
-      <button onClick={() => store.addShow(show)}>Add show</button>
+      <button onClick={() => handleAddShow()}>Add show</button>
 
       <NavLink to={'/'}>Cancel</NavLink>
+      {store.errorMessage}
     </>
   );
 }
 
-function DisplayAllShows(props) {
-  const store = React.useContext(StoreContext);
+function DeleteShow() {
+  const store = React.useContext<Object>(StoreContext);
 
-  if (!store.shows || !store.ratings) return null;
+  if (!store.shows) return null;
   return (
     <>
       {store.shows.map((show) => (
         <div key={show.id}>
-          <DisplayShow show={show} />
+          <button onClick={() => store.deleteShow(show)}>delete</button>
+          id: {show.id} title: {show.title}
         </div>
       ))}
-      <NavLink to={'/shows/add'}>Add show</NavLink>
+      <NavLink to={'/'}>Cancel</NavLink>
+      {store.errorMessage}
+    </>
+  );
+}
+
+function DisplayShow(props) {
+  const store = React.useContext<Object>(StoreContext);
+  let rating = new Rating();
+  const show = props.show;
+  const showRatings = store.ratings.filter((e) => e.showId === show.id);
+
+  const handleRating = (value) => {
+    rating = { ...rating, showId: show.id, rating: value };
+    store.addRating(rating);
+  };
+
+  return (
+    <>
+      <div key={show.id}>
+        <h3>{show.title}</h3>
+        <div>{show.description}</div>
+        Rating:{' '}
+        {Number(
+          (
+            showRatings.reduce((sum, e) => sum + e.rating, 0) /
+            showRatings.length
+          ).toFixed(2)
+        ) || 'unrated'}
+        <br />
+        Votes: {showRatings.length}
+        <br />
+        Rate:
+        <button onClick={() => handleRating(1)}>1</button>
+        <button onClick={() => handleRating(2)}>2</button>
+        <button onClick={() => handleRating(3)}>3</button>
+        <button onClick={() => handleRating(4)}>4</button>
+        <button onClick={() => handleRating(5)}>5</button>
+      </div>
+    </>
+  );
+}
+
+function DisplayAllShows() {
+  const store = React.useContext<Object>(StoreContext);
+  const [search, setSearch] = React.useState('');
+
+  const handleSearch = (value) => {
+    setSearch(value);
+  };
+
+  if (!store.shows || !store.ratings) return null;
+  return (
+    <>
+      Manage shows: <NavLink to={'/shows/add'}>add</NavLink>{' '}
+      <NavLink to={'/shows/delete'}>delete</NavLink>
+      <br />
+      <h2>Shows</h2>
+      <input
+        value={search}
+        placeholder="search"
+        onChange={(e) => handleSearch(e.currentTarget.value)}
+      ></input>
+      {store.shows
+        .filter((show) =>
+          show.title.toLowerCase().includes(search.toLowerCase())
+        )
+        .map((show) => (
+          <div key={show.id}>
+            <DisplayShow show={show} />
+          </div>
+        ))}
     </>
   );
 }
@@ -269,6 +341,9 @@ if (root)
         </Route>
         <Route path="/shows/add">
           <AddShow />
+        </Route>
+        <Route path="/shows/delete">
+          <DeleteShow />
         </Route>
       </Store>
     </Router>,
