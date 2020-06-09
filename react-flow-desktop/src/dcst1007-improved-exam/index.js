@@ -275,7 +275,7 @@ function DisplayShow(props) {
   return (
     <>
       <div key={show.id}>
-        <h1> {show.title}</h1>
+        <h3>{show.title}</h3>
         <div>{show.description}</div>
         Rating:{' '}
         {Number(
@@ -309,12 +309,13 @@ function DisplayAllShows() {
   if (!store.shows || !store.ratings) return null;
   return (
     <>
-      Manage shows:
-      <NavLink to={'/shows/add'}>add</NavLink>{' '}
+      Manage shows: <NavLink to={'/shows/add'}>add</NavLink>{' '}
       <NavLink to={'/shows/delete'}>delete</NavLink>
       <br />
+      <h2>Shows</h2>
       <input
         value={search}
+        placeholder="search"
         onChange={(e) => handleSearch(e.currentTarget.value)}
       ></input>
       {store.shows
