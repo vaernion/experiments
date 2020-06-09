@@ -199,7 +199,7 @@ function Store(props) {
   );
 }
 
-function AddShow(props) {
+function AddShow() {
   const store = React.useContext(StoreContext);
   const [show, setShow] = React.useState<Show>(new Show());
 
@@ -243,6 +243,24 @@ function AddShow(props) {
   );
 }
 
+function DeleteShow() {
+  const store = React.useContext(StoreContext);
+
+  if (!store.shows) return null;
+  return (
+    <>
+      {store.shows.map((show) => (
+        <div key={show.id}>
+          <button onClick={() => store.deleteShow(show)}>delete</button>
+          id: {show.id} title: {show.title}
+        </div>
+      ))}
+      <NavLink to={'/'}>Cancel</NavLink>
+      {store.errorMessage}
+    </>
+  );
+}
+
 function DisplayShow(props) {
   const store = React.useContext(StoreContext);
   let rating = new Rating();
@@ -258,7 +276,6 @@ function DisplayShow(props) {
     <>
       <div key={show.id}>
         <h1> {show.title}</h1>
-        <button onClick={() => store.deleteShow(show)}>delete</button>
         <div>{show.description}</div>
         Rating:{' '}
         {Number(
@@ -281,18 +298,34 @@ function DisplayShow(props) {
   );
 }
 
-function DisplayAllShows(props) {
+function DisplayAllShows() {
   const store = React.useContext(StoreContext);
+  const [search, setSearch] = React.useState('');
+
+  const handleSearch = (value) => {
+    setSearch(value);
+  };
 
   if (!store.shows || !store.ratings) return null;
   return (
     <>
-      {store.shows.map((show) => (
-        <div key={show.id}>
-          <DisplayShow show={show} />
-        </div>
-      ))}
-      <NavLink to={'/shows/add'}>Add show</NavLink>
+      Manage shows:
+      <NavLink to={'/shows/add'}>add</NavLink>{' '}
+      <NavLink to={'/shows/delete'}>delete</NavLink>
+      <br />
+      <input
+        value={search}
+        onChange={(e) => handleSearch(e.currentTarget.value)}
+      ></input>
+      {store.shows
+        .filter((show) =>
+          show.title.toLowerCase().includes(search.toLowerCase())
+        )
+        .map((show) => (
+          <div key={show.id}>
+            <DisplayShow show={show} />
+          </div>
+        ))}
     </>
   );
 }
@@ -307,6 +340,9 @@ if (root)
         </Route>
         <Route path="/shows/add">
           <AddShow />
+        </Route>
+        <Route path="/shows/delete">
+          <DeleteShow />
         </Route>
       </Store>
     </Router>,
