@@ -2,18 +2,17 @@ const fetch = require("node-fetch");
 
 const args = process.argv.slice(2);
 
+// node.exe instead of node because some windows specific issue
+// https://stackoverflow.com/questions/45890339/stdout-is-not-a-tty-using-bash-for-node-tape-tap-spec
+
+// USAGE
 // node.exe fstd.js "url" > abc.json
-//    or to get applist
-// node.exe fstd.js -a > abc.json
-//    or to get appdetails
-// node.exe fstd.js -d "appid" > abc.json
+//    or to get Steam applist
+// node.exe fstd.js -sl > steamAppList.json
+//    or to get Steam appdetails
+// node.exe fstd.js -sd "appid" > steamapp.json
 //    for help
 // node fstd || node fstd -h
-
-// app list
-// https://api.steampowered.com/ISteamApps/GetAppList/v2/
-// app details
-// http://store.steampowered.com/api/appdetails?appids={APP_ID}
 
 const URL = {
   appList: "https://api.steampowered.com/ISteamApps/GetAppList/v2/",
@@ -35,7 +34,7 @@ const url = (() => {
 
 console.warn("args:", args, "url:", url);
 
-const helpMessage = "usage: node.exe fstd ['url'/-sl/-sd 'appid']";
+const helpMessage = "usage: fstd ['url'/-sl/-sd 'appid']";
 
 if (!url || url === "-h" || (args[0] === "-sd" && !args[1])) {
   return console.warn(helpMessage);
