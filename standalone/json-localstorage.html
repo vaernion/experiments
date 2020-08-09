@@ -8,18 +8,22 @@
     <script type="text/javascript">
       let objStored = "objStored";
       let obj = { name: "abc", info: 5 };
-      // let json = JSON.stringify(obj, transform());
       let json = JSON.stringify(obj, transform);
+
       localStorage.setItem(objStored, json);
 
       let storage = localStorage.getItem(objStored);
       let output = JSON.parse(storage);
+
+      console.log(obj);
       console.log(json);
-      console.log("output.info", output.info);
+      console.log(output);
+
+      localStorage.removeItem(objStored);
 
       function transform(k, v) {
-        console.log(k, v);
-        return k === "info" ? v + 1 : v;
+        console.log("transforming", k, v);
+        return k === "info" ? v + 100 : v;
       }
     </script>
   </body>
