@@ -1,7 +1,5 @@
 const fetch = require("node-fetch");
 
-const args = process.argv.slice(2);
-
 // node.exe instead of node because some windows specific issue
 // https://stackoverflow.com/questions/45890339/stdout-is-not-a-tty-using-bash-for-node-tape-tap-spec
 
@@ -14,7 +12,9 @@ const args = process.argv.slice(2);
 //    for help
 // node fstd || node fstd -h
 
-const URL = {
+const args = process.argv.slice(2);
+
+const urlStorage = {
   appList: "https://api.steampowered.com/ISteamApps/GetAppList/v2/",
   appDetails: "http://store.steampowered.com/api/appdetails?appids=",
 };
@@ -22,17 +22,17 @@ const URL = {
 const url = (() => {
   switch (args[0]) {
     case "-h":
-      return;
+      return null;
     case "-sl": // steam appList
-      return URL.appList;
+      return urlStorage.appList;
     case "-sd": // steam appDetails
-      return URL.appDetails + args[1];
+      return urlStorage.appDetails + args[1];
     default:
       return args[0];
   }
 })();
 
-console.warn("args:", args, "url:", url);
+// console.warn("args:", args, "url:", url);
 
 const helpMessage = "usage: fstd ['url'/-sl/-sd 'appid']";
 
@@ -44,9 +44,8 @@ const getJson = async (path) => {
   try {
     const res = await fetch(path);
     const json = await res.json();
-    const stringified = await JSON.stringify(json, null, 2);
+    const stringified = JSON.stringify(json, null, 2);
     writeOutput(stringified);
-    return json;
   } catch (err) {
     console.error(err);
   }
