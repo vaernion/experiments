@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:," />
+    <title>First Vue experiment</title>
+    <link rel="stylesheet" href="https://ez-css.now.sh" />
+    <style>
+      [v-cloak] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <main v-cloak id="app">
+      <h2>
+        {{message}}
+      </h2>
+      <div style="width: 20rem;">
+        <form @submit.prevent="addNewTodo">
+          <label for="newTodo">New todo</label>
+          <input v-model="newTodo" name="newTodo" id="newTodo" />
+          <button type="submit">Add todo</button>
+        </form>
+        <button type="button" @click="clearTodos">
+          Clear all todos
+        </button>
+      </div>
+      <ul>
+        <li v-for="todo in todos">
+          {{`${todo.id} ${todo.text}`}}
+          <button
+            type="button"
+            @click="clearTodo(todo.id)"
+            style="width: min-content;"
+          >
+            Clear
+          </button>
+        </li>
+      </ul>
+    </main>
+    <script src="index.js" type="module"></script>
+  </body>
+</html>
