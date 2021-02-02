@@ -16,7 +16,7 @@ const args = process.argv.slice(2);
 
 const urlStorage = {
   appList: "https://api.steampowered.com/ISteamApps/GetAppList/v2/",
-  appDetails: "http://store.steampowered.com/api/appdetails?appids=",
+  appDetails: "https://store.steampowered.com/api/appdetails?appids=",
 };
 
 const url = (() => {
