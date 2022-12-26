@@ -1,0 +1,72 @@
+<html>
+  <head> </head>
+
+  <body>
+    <h1>min nettside</h1>
+
+    <div id="div1" style="font-size: 2rem"></div>
+
+    <button onclick="steinSaksPapir()">knapp</button>
+
+    <script>
+      const score = {
+        spiller: 0,
+        pc: 0,
+        ingen: 0,
+      };
+
+      const muligeValg = {
+        stein: "stein",
+        saks: "saks",
+        papir: "papir",
+      };
+
+      const vinnere = {
+        spiller: "spiller",
+        pc: "pc",
+        ingen: "ingen",
+      };
+
+      function finnVinner(spiller, pc) {
+        let vinner;
+
+        if (spiller == pc) {
+          vinner = vinnere.ingen;
+        } else if (spiller == muligeValg.stein && pc == muligeValg.saks) {
+          vinner = vinnere.spiller;
+        } else if (spiller == muligeValg.stein && pc == muligeValg.papir) {
+          vinner = vinnere.pc;
+        } else if (spiller == muligeValg.saks && pc == muligeValg.stein) {
+          vinner = vinnere.pc;
+        } else if (spiller == muligeValg.saks && pc == muligeValg.papir) {
+          vinner = vinnere.spiller;
+        } else if (spiller == muligeValg.papir && pc == muligeValg.stein) {
+          vinner = vinnere.spiller;
+        } else if (spiller == muligeValg.papir && pc == muligeValg.saks) {
+          vinner = vinnere.pc;
+        }
+
+        return vinner;
+      }
+
+      function steinSaksPapir() {
+        let div = document.getElementById("div1");
+
+        let spillerValg;
+        while (!Object.values(muligeValg).includes(spillerValg)) {
+          spillerValg = window.prompt("Skriv stein, saks eller papir");
+        }
+
+        let pcValg = Object.values(muligeValg)[Math.floor(Math.random() * 3)];
+
+        let vinner = finnVinner(spillerValg, pcValg);
+
+        score[vinner] += 1;
+
+        div.innerText = `Du valgte ${spillerValg}, maskinen valgte ${pcValg}`;
+        div.innerText += `\n Vinneren er ${vinner}`;
+        div.innerText += `\n Score --- spiller: ${score.spiller} pc: ${score.pc} uavgjort: ${score.ingen}`;
+      }
+    </script>
+  </body>
+</html>
