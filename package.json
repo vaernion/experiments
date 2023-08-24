@@ -1,0 +1,17 @@
+{
+  "name": "experiments",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {},
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vaernion/experiments.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vaernion/experiments/issues"
+  },
+  "homepage": "https://github.com/vaernion/experiments#readme"
+}
